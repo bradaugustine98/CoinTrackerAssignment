@@ -13,7 +13,7 @@ import retrofit2.http.Headers
 
 
 private const val BASE_URL = "https://pro-api.coinmarketcap.com/"
-private const val YOUR_API_KEY = "81c565ce-9f80-4d9a-816f-0e216ca23013"
+private const val YOUR_API_KEY = "755b4e82-2f52-40e9-9c49-c9e8148e6fb4"
 
 private val moshi = Moshi.Builder()
     .add(KotlinJsonAdapterFactory())

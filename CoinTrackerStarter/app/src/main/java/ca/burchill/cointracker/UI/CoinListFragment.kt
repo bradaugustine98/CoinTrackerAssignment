@@ -5,17 +5,24 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import ca.burchill.cointracker.R
 import ca.burchill.cointracker.databinding.FragmentCoinListBinding
+import ca.burchill.cointracker.viewModels.CoinApiStatus
 import ca.burchill.cointracker.viewModels.CoinListViewModel
 
 
 class CoinListFragment : Fragment() {
 
     private val viewModel: CoinListViewModel by lazy {
-        ViewModelProvider(this).get(CoinListViewModel::class.java)
+        val activity = requireNotNull(this.activity) {
+            "You can only access the viewModel after onActivityCreated()"
+        }
+        ViewModelProvider(this, CoinListViewModel.Factory(activity.application)).get(
+            CoinListViewModel::class.java
+        )
     }
 
     override fun onCreateView(
@@ -37,8 +44,23 @@ class CoinListFragment : Fragment() {
                 adapter.submitList(it)
             }
         })
-        return  binding.root
+        viewModel.status.observe(viewLifecycleOwner, Observer<CoinApiStatus> { status ->
+            when(status){
+                CoinApiStatus.LOADING -> toastNetworkEvent("Loading Data", Toast.LENGTH_SHORT)
+                CoinApiStatus.ERROR -> toastNetworkEvent("Network Error", Toast.LENGTH_LONG)
+                CoinApiStatus.DONE -> toastNetworkEvent("Data Loaded", Toast.LENGTH_SHORT)
+            }
+        })
+
+        return binding.root
     }
+
+
+    private fun toastNetworkEvent(msg: String, duration: Int) {
+        Toast.makeText(activity, msg, duration).show()
+    }
+}
+}
 
 
 }
